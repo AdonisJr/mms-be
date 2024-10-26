@@ -8,8 +8,8 @@ The **General Services Monitoring and Management System (GSMMS)** is a Laravel-b
 - **Service Request Management**: Faculty can submit service requests (e.g., repairs, cleaning) and track their status.
 - **Preventive Maintenance**: Regular maintenance schedules and tasks assigned to personnel to ensure equipment remains in optimal condition.
 - **Inventory Management**: CRUD functionality for tracking and managing general services equipment inventory.
-- **User Roles**: Different access levels for administrators, utility workers, and faculty.
-- **Task Management**: Utility workers update task statuses and upload proof of completion.
+- **User Roles**: Different access levels for administrators, personnel, and staff/faculty.
+- **Task Management**: Personnel update task statuses and upload proof of completion.
 
 ## Requirements
 
@@ -96,8 +96,8 @@ The app should now be accessible at `http://localhost:8000`.
 
 ## Usage
 
-1. **Login/Register**: Different user roles (Admin, Faculty, Utility Worker) can log in and access role-specific features.
-2. **Service Requests**: Faculty members can submit requests, which are then managed by admins and utility workers.
+1. **Login/Register**: Different user roles (Admin, Staff, Personnel) can log in and access role-specific features.
+2. **Service Requests**: Staff members can submit requests, which are then managed by admins and personnel.
 3. **Preventive Maintenance**: Regular equipment maintenance tasks are tracked, assigned, and completed.
 4. **Inventory Management**: CRUD functionality allows the tracking of equipment details, including maintenance schedules and conditions.
 5. **Task Updates**: Utility workers can update task statuses and upload proof of completion.
