@@ -1,66 +1,119 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# General Services Monitoring and Management System (GSMMS)
 
-## About Laravel
+The **General Services Monitoring and Management System (GSMMS)** is a Laravel-based application designed to streamline the management and monitoring of General Services within a school department. The app allows faculty members to request services, track preventive maintenance for equipment, manage inventory, and facilitate task updates from utility workers.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Features
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Service Request Management**: Faculty can submit service requests (e.g., repairs, cleaning) and track their status.
+- **Preventive Maintenance**: Regular maintenance schedules and tasks assigned to personnel to ensure equipment remains in optimal condition.
+- **Inventory Management**: CRUD functionality for tracking and managing general services equipment inventory.
+- **User Roles**: Different access levels for administrators, utility workers, and faculty.
+- **Task Management**: Utility workers update task statuses and upload proof of completion.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Requirements
 
-## Learning Laravel
+- **PHP 8.1+**
+- **Composer**
+- **Laravel 11**
+- **MariaDB/MySQL**
+- **Node.js and npm** (for frontend dependencies)
+- **Git** (for version control)
+- **.env** file (set up with your database and app details)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Installation
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### 1. Clone the Repository
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+git clone https://github.com/your-username/gsmms.git
+cd gsmms
+```
 
-## Laravel Sponsors
+### 2. Install Dependencies
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- **Install PHP dependencies**:
 
-### Premium Partners
+  ```bash
+  composer install
+  ```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+- **Install JavaScript dependencies**:
+
+  ```bash
+  npm install
+  ```
+
+### 3. Environment Setup
+
+- Duplicate the `.env.example` file and rename it as `.env`:
+
+  ```bash
+  cp .env.example .env
+  ```
+
+- **Configure the `.env` file** with your database details and any other environment variables (e.g., `APP_NAME`, `APP_URL`, `DB_CONNECTION`, `DB_DATABASE`, etc.).
+
+### 4. Generate Application Key
+
+```bash
+php artisan key:generate
+```
+
+### 5. Database Setup
+
+- **Create a new database** for the app in your preferred database manager (e.g., MariaDB/MySQL).
+- **Run migrations** to set up the database tables:
+
+  ```bash
+  php artisan migrate
+  ```
+
+- **Seed the database** with initial data (if applicable):
+
+  ```bash
+  php artisan db:seed
+  ```
+
+### 6. Run the Development Server
+
+To start the local development server, run:
+
+```bash
+php artisan serve
+```
+
+### 7. Running Additional Services
+
+- **Compile assets** for development (hot reloading) or production:
+
+  ```bash
+  npm run dev   # for development
+  npm run build # for production
+  ```
+
+The app should now be accessible at `http://localhost:8000`.
+
+## Usage
+
+1. **Login/Register**: Different user roles (Admin, Faculty, Utility Worker) can log in and access role-specific features.
+2. **Service Requests**: Faculty members can submit requests, which are then managed by admins and utility workers.
+3. **Preventive Maintenance**: Regular equipment maintenance tasks are tracked, assigned, and completed.
+4. **Inventory Management**: CRUD functionality allows the tracking of equipment details, including maintenance schedules and conditions.
+5. **Task Updates**: Utility workers can update task statuses and upload proof of completion.
 
 ## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Contributions are welcome! Please fork the repository and submit a pull request for review.
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-source and available under the [MIT License](LICENSE).
+
+## Contact
+
+For support or inquiries, please contact [your-email@example.com].
+
+---
+
+Thank you for using GSMMS!
