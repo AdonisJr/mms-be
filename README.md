@@ -72,7 +72,7 @@ php artisan key:generate
 - **Seed the database** with initial data (if applicable):
 
   ```bash
-  php artisan db:seed
+  php artisan migrate:fresh --seed
   ```
 
 ### 6. Run the Development Server
@@ -80,7 +80,9 @@ php artisan key:generate
 To start the local development server, run:
 
 ```bash
-php artisan serve
+php artisan serve // for local
+php artisan serve --host=192.168.1.2 --port=8000
+use your ipv4 address
 ```
 
 ### 7. Running Additional Services
