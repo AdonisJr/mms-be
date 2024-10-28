@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ServiceRequest;
 use App\Models\Service;
+use App\Models\Notification;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -231,8 +232,22 @@ class ServiceRequestController extends Controller
         // Attach the assigned users to the task using the pivot table
         $task->utilityWorkers()->attach($request->assigned_to);
 
+        // Retrieve the service name
+        $serviceName = $serviceRequest->service->name ?? 'Unknown Service';
+
+        // Create notifications for each assigned user
+        foreach ($request->assigned_to as $userId) {
+            Notification::create([
+                'user_id' => $userId,
+                'type' => 'assign-task',
+                'message' => 'You have been assigned to task ID: ' . $task->id . ' - ' . $serviceName,
+                'isRead' => false, // Set isRead to false
+            ]);
+        }
+
         return response()->json($task, 201);
     }
+
 
 
 

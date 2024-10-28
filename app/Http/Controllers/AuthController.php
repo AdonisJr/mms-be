@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\UserToken;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -43,26 +44,30 @@ class AuthController extends Controller
     }
 
 
-    public function login(Request $request){
-         // Validate the incoming request
-         $validator = Validator::make($request->all(), [
-                'email' => 'required|email',
-                'password' => 'required'
+    public function login(Request $request)
+    {
+        // Validate request
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+            'expo_push_token' => 'required|string', // Validate the token
         ]);
-        
-        
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
 
+        // Authenticate user
         $user = User::where('email', $request->email)->first();
 
-        if(!$user || !Hash::check($request->password, $user->password)) {
-            error_log('!user');
-            return response()->json(['message' => 'Invalid Credentials', 'status' => 401], 401);
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
+        // Create a token for the user
         $token = $user->createToken('token_name')->plainTextToken;
+
+        // Save the expo_push_token to user_tokens table
+        UserToken::updateOrCreate(
+            ['user_id' => $user->id], // Find by user_id
+            ['expo_push_token' => $request->expo_push_token] // Update or create the token
+        );
 
         return response()->json(['token' => $token, 'user' => $user]);
     }

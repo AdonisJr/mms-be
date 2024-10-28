@@ -9,6 +9,7 @@ use App\Http\Controllers\ServiceRequestController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\PreventiveMaintenanceController;
+use App\Http\Controllers\NotificationController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -42,6 +43,11 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route::put('/updateTask/{id}', [TaskController::class, 'updateTask']);
     Route::put('/updateTaskStatus/{id}', [TaskController::class, 'updateTaskStatus']);
     Route::post('/uploadProof/{id}', [TaskController::class, 'uploadProof']);
+
+    // notification
+    
+    Route::apiResource('/notifications', NotificationController::class);
+    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
 
     // inventory
     Route::apiResource('/inventory', InventoryController::class);
