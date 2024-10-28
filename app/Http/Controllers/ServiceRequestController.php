@@ -167,7 +167,7 @@ class ServiceRequestController extends Controller
         Log::info('Fetching service requests for user', ['user_id' => $user->id]);
 
         // Fetch service requests for the authenticated user
-        $serviceRequests = ServiceRequest::with('service')->where('requested_by', $user->id)->get();
+        $serviceRequests = ServiceRequest::with(['service', 'approver'])->where('requested_by', $user->id)->get();
 
         // Check if any service requests were found
         if ($serviceRequests->isEmpty()) {
