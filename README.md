@@ -27,7 +27,7 @@ The **General Services Monitoring and Management System (GSMMS)** is a Laravel-b
 
 ```bash
 git clone https://github.com/your-username/gsmms.git
-cd gsmms
+cd gsmms-be
 ```
 
 ### 2. Install Dependencies
