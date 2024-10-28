@@ -33,7 +33,7 @@ class InventoryController extends Controller
             'department' => 'required|string',
             'status' => 'required|string',
             'condition' => 'required|string',
-            'health' => 'required|string'
+            'health' => 'required|integer'
         ]);
     
         // Use Carbon to format the acquisition_date

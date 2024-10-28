@@ -39,7 +39,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // task
     Route::apiResource('/tasks', TaskController::class);
     Route::get('/assignedToMe', [TaskController::class, 'assignedToMe']);
-    Route::put('/updateTask/{id}', [TaskController::class, 'updateTask']);
+    // Route::put('/updateTask/{id}', [TaskController::class, 'updateTask']);
+    Route::put('/updateTaskStatus/{id}', [TaskController::class, 'updateTaskStatus']);
+    Route::post('/uploadProof/{id}', [TaskController::class, 'uploadProof']);
 
     // inventory
     Route::apiResource('/inventory', InventoryController::class);
