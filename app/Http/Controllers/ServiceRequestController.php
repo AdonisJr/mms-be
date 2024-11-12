@@ -30,7 +30,8 @@ class ServiceRequestController extends Controller
         $serviceRequests = ServiceRequest::with([
             'service', 
             'user', 
-            'tasks' // Include utility workers assigned to each task
+            'tasks', // Include utility workers assigned to each task
+            'requested'
         ])->get();
 
         return response()->json($serviceRequests);

@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: laravel-app
+    env: php
+    plan: free
+    buildCommand: "composer install && php artisan key:generate && php artisan config:cache"
+    startCommand: "php artisan serve --host 0.0.0.0 --port 10000"
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_KEY
+        value: "base64:your_generated_app_key_here"
+      - key: DB_CONNECTION
+        value: DB_CONNECTION
+      - key: DB_HOST
+        value: DB_HOST
+      - key: DB_PORT
+        value: DB_PORT
+      - key: DB_DATABASE
+        value: general_services
+      - key: DB_USERNAME
+        value: DB_USERNAME
+      - key: DB_PASSWORD
+        value: DB_PASSWORD
