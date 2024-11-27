@@ -32,8 +32,9 @@ class ServiceRequestController extends Controller
         $serviceRequests = ServiceRequest::with([
             'service', 
             'user', 
-            'tasks', // Include utility workers assigned to each task
-            'requested'
+            'tasks.utilityWorkers', // Include utility workers assigned to each task
+            'requested',
+            'equipment'
         ])->get();
 
         return response()->json($serviceRequests);
@@ -172,7 +173,13 @@ class ServiceRequestController extends Controller
         Log::info('Fetching service requests for user', ['user_id' => $user->id]);
 
         // Fetch service requests for the authenticated user
-        $serviceRequests = ServiceRequest::with(['service', 'approver'])->where('requested_by', $user->id)->get();
+        $serviceRequests = ServiceRequest::with([
+                'service', 
+                'approver', 
+                'tasks.utilityWorkers',
+                'requested',
+                'equipment'
+            ])->where('requested_by', $user->id)->get();
 
         // Check if any service requests were found
         if ($serviceRequests->isEmpty()) {

@@ -12,6 +12,7 @@ class Inventory extends Model
 
     protected $fillable = [
         'name',
+        'user_id',
         'equipment_type',
         'model',
         'acquisition_date',
@@ -22,5 +23,10 @@ class Inventory extends Model
         'condition',
         'health',
     ];
+
+    public function requested()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
     
 }

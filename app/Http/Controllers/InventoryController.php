@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Inventory;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log; // Import Log facade
 
 class InventoryController extends Controller
 {
@@ -14,7 +15,10 @@ class InventoryController extends Controller
      */
     public function index()
     {
-        $inventories = Inventory::all();
+        $inventories = Inventory::with([
+            'requested'
+        ])->get();
+
         return response()->json($inventories);
     }
 
@@ -64,29 +68,47 @@ class InventoryController extends Controller
      * Update the specified inventory in storage.
      */
     public function update(Request $request, $id)
-    {
-        $request->validate([
-            'equipment_type' => 'required|string',
-            'name' => 'required|string',
-            'model' => 'nullable|string',
-            'acquisition_date' => 'required|date',
-            'location' => 'nullable|string',
-            'warranty' => 'nullable|string',
-            'department' => 'nullable|string',
-            'status' => 'required|string',
-            'condition' => 'required|string',
-            'health' => 'required|integer'
-        ]);
+{
+    $request->validate([
+        'equipment_type' => 'required|string',
+        'user_id' => 'nullable|integer',
+        'name' => 'required|string',
+        'model' => 'nullable|string',
+        'acquisition_date' => 'required|date',
+        'location' => 'nullable|string',
+        'warranty' => 'nullable|string',
+        'department' => 'nullable|string',
+        'status' => 'required|string',
+        'condition' => 'required|string',
+        'health' => 'required|integer'
+    ]);
 
-        $inventory = Inventory::find($id);
+    Log::info('Update Request Payload', $request->all());
 
-        if (!$inventory) {
-            return response()->json(['message' => 'Inventory not found'], 404);
-        }
+    $inventory = Inventory::find($id);
 
-        $inventory->update($request->all());
-        return response()->json($inventory);
+    if (!$inventory) {
+        return response()->json(['message' => 'Inventory not found'], 404);
     }
+
+    // Update explicitly to ensure `user_id` is handled correctly
+    $inventory->equipment_type = $request->equipment_type;
+    $inventory->user_id = $request->user_id; // Set user_id explicitly
+    $inventory->name = $request->name;
+    $inventory->model = $request->model;
+    $inventory->acquisition_date = $request->acquisition_date;
+    $inventory->location = $request->location;
+    $inventory->warranty = $request->warranty;
+    $inventory->department = $request->department;
+    $inventory->status = $request->status;
+    $inventory->condition = $request->condition;
+    $inventory->health = $request->health;
+
+    $inventory->save();
+
+    return response()->json($inventory);
+}
+
 
     /**
      * Remove the specified inventory from storage.

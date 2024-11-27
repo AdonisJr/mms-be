@@ -44,4 +44,8 @@ class PreventiveMaintenance extends Model
         
         return $array;
     }
+    public function reports()
+    {
+        return $this->hasMany(PreventiveMaintenanceReport::class, 'preventive_id');
+    }
 }

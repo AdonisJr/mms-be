@@ -47,4 +47,13 @@ class ServiceRequest extends Model
     {
         return $this->hasMany(Task::class, 'service_request_id');
     }
+
+    public function equipment()
+    {
+        return $this->hasMany(Inventory::class, 'user_id', 'requested_by');
+    }
+    public function preventiveReports()
+{
+    return $this->hasMany(PreventiveMaintenanceReport::class, 'service_request_id');
+}
 }

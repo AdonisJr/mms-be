@@ -10,6 +10,7 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\PreventiveMaintenanceController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PreventiveMaintenanceReportController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -58,6 +59,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Preventive maintenance
     Route::apiResource('/preventive-maintenance', PreventiveMaintenanceController::class);
     Route::get('/getMyPreventiveMaintenanceTasks', [PreventiveMaintenanceController::class, 'getMyPreventiveMaintenanceTasks']);
+    
+    Route::apiResource('preventive-maintenance-report', PreventiveMaintenanceReportController::class);
     // Other protected routes
 });
 
