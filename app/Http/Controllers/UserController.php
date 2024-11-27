@@ -230,11 +230,14 @@ class UserController extends Controller
 
         // Check if the type is 'all' to return all users
         if ($type == 'all') {
-            return response()->json(User::all(), 200);
-        };
+            $users = User::orderBy('created_at', 'desc')->get(); // Order by created_at in descending order
+            return response()->json($users, 200);
+        }
 
-        // Fetch users by the provided type
-        $users = User::where('type', $type)->get();
+        // Fetch users by the provided type and order by descending
+        $users = User::where('type', $type)
+                    ->orderBy('created_at', 'desc') // Order by created_at in descending order
+                    ->get();
 
         // Check if any users are found
         if ($users->isEmpty()) {
@@ -244,4 +247,5 @@ class UserController extends Controller
         // Return the users as JSON
         return response()->json($users, 200);
     }
+
 }

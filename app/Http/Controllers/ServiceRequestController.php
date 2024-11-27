@@ -6,10 +6,12 @@ use App\Models\ServiceRequest;
 use App\Models\Service;
 use App\Models\Notification;
 use App\Models\Task;
+use App\Models\UserToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log; // Import Log facade
 use Carbon\Carbon; // Import Carbon
+use Illuminate\Support\Facades\Http;
 
 class ServiceRequestController extends Controller
 {
@@ -50,7 +52,8 @@ class ServiceRequestController extends Controller
             'expected_start_date' => 'nullable|date',
             'end_date' => 'nullable|date',
             'number_of_personnel' => 'nullable|integer',
-            'classification' => 'nullable|in:immediate,short term,minimum term,project'
+            'classification' => 'nullable|in:immediate,short term,minimum term,project',
+            'other' => 'nullable|string'
         ]);
 
         // Convert dates to Carbon instances if provided
@@ -100,7 +103,8 @@ class ServiceRequestController extends Controller
             'expected_start_date' => 'nullable|date',
             'expected_end_date' => 'nullable|date',
             'number_of_personnel' => 'nullable|integer',
-            'classification' => 'nullable|in:immediate,short term,minimum term,project'
+            'classification' => 'nullable|in:immediate,short term,minimum term,project',
+            'other' => 'nullable|string'
         ]);
 
         // Get the authenticated user
@@ -179,7 +183,6 @@ class ServiceRequestController extends Controller
         return response()->json($serviceRequests, 200);
     }
 
-    // assign task
     // public function assignTask(Request $request, $id)
     // {
     //     $serviceRequest = ServiceRequest::find($id);
@@ -190,23 +193,37 @@ class ServiceRequestController extends Controller
 
     //     // Validate the request
     //     $request->validate([
-    //         'assigned_to' => 'required|exists:users,id', // Ensure the utility worker exists
+    //         'assigned_to' => 'required|array', // Expecting an array of user IDs
+    //         'assigned_to.*' => 'exists:users,id', // Validate each user ID
     //         'deadline' => 'required|date', // Ensure deadline is a valid date
     //     ]);
-
-    //     // Convert the incoming deadline to MySQL-compatible format using Carbon
-    //     $deadline = Carbon::parse($request->deadline)->format('Y-m-d H:i:s');
 
     //     // Create the task
     //     $task = Task::create([
     //         'service_request_id' => $serviceRequest->id,
-    //         'assigned_to' => $request->assigned_to,
-    //         'deadline' => $deadline,
+    //         'deadline' => Carbon::parse($request->deadline)->format('Y-m-d H:i:s'),
     //         'status' => 'pending', // Default status
     //     ]);
 
+    //     // Attach the assigned users to the task using the pivot table
+    //     $task->utilityWorkers()->attach($request->assigned_to);
+
+    //     // Retrieve the service name
+    //     $serviceName = $serviceRequest->service->name ?? 'Unknown Service';
+
+    //     // Create notifications for each assigned user
+    //     foreach ($request->assigned_to as $userId) {
+    //         Notification::create([
+    //             'user_id' => $userId,
+    //             'type' => 'assign-task',
+    //             'message' => 'You have been assigned to task ID: ' . $task->id . ' - ' . $serviceName,
+    //             'isRead' => false, // Set isRead to false
+    //         ]);
+    //     }
+
     //     return response()->json($task, 201);
     // }
+
 
     public function assignTask(Request $request, $id)
     {
@@ -238,16 +255,58 @@ class ServiceRequestController extends Controller
 
         // Create notifications for each assigned user
         foreach ($request->assigned_to as $userId) {
+            // Create a notification entry
             Notification::create([
                 'user_id' => $userId,
                 'type' => 'assign-task',
                 'message' => 'You have been assigned to task ID: ' . $task->id . ' - ' . $serviceName,
                 'isRead' => false, // Set isRead to false
             ]);
+
+            // Retrieve the user's Expo push token from the database (assuming it's stored in `user_tokens` table)
+            $expoPushToken = UserToken::where('user_id', $userId)->first()->expo_push_token ?? null;
+
+            if ($expoPushToken) {
+                // Send an Expo push notification
+                $this->sendExpoPushNotification($expoPushToken, $task->id, $serviceName, $userId);
+            }
         }
 
         return response()->json($task, 201);
     }
+
+    // Method to send Expo Push Notification
+    private function sendExpoPushNotification($expoPushToken, $taskId, $serviceName, $userId)
+    {
+        // Prepare the message payload
+        $data = [
+            'to' => $expoPushToken,
+            'title' => 'New Task Assigned',
+            'body' => "You have been assigned to task ID: $taskId - $serviceName",
+            'data' => [
+                'task_id' => $taskId,
+                'service_name' => $serviceName,
+            ],
+        ];
+
+        // Send the push notification to Expo's push notification service
+        $response = Http::withHeaders([
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ])->post('https://exp.host/--/api/v2/push/send', $data);
+
+        // Log the response or handle failure
+        if ($response->successful()) {
+            Log::info('Push notification sent successfully', ['task_id' => $taskId, 'user_id' => $userId]);
+        } else {
+            Log::error('Failed to send push notification', [
+                'task_id' => $taskId,
+                'user_id' => $userId,
+                'response' => $response->body(),
+            ]);
+        }
+    }
+
 
 
 

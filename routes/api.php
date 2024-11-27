@@ -18,11 +18,14 @@ Route::get('/user', function (Request $request) {
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/services', [ServiceController::class, 'index']);
-
+Route::get('/test', function () {
+    return response()->file(storage_path('app/public/proofs/1730102505_proof.jpg'));
+});
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('/users', UserController::class);
     Route::post('/changePassword', [UserController::class, 'changePassword']);
     Route::get('/getUserByType/{type}', [UserController::class, 'getUserByType']);
+    Route::post('/logout', [UserController::class, 'logout']);
 
     // services
     // Route::post('/services', [ServiceController::class, 'store']);

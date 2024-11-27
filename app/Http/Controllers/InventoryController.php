@@ -28,9 +28,9 @@ class InventoryController extends Controller
             'equipment_type' => 'required|string',
             'model' => 'nullable|string',
             'acquisition_date' => 'required|date',
-            'location' => 'required|string',
+            'location' => 'nullable|string',
             'warranty' => 'nullable|string',
-            'department' => 'required|string',
+            'department' => 'nullable|string',
             'status' => 'required|string',
             'condition' => 'required|string',
             'health' => 'required|integer'
@@ -70,9 +70,9 @@ class InventoryController extends Controller
             'name' => 'required|string',
             'model' => 'nullable|string',
             'acquisition_date' => 'required|date',
-            'location' => 'required|string',
+            'location' => 'nullable|string',
             'warranty' => 'nullable|string',
-            'department' => 'required|string',
+            'department' => 'nullable|string',
             'status' => 'required|string',
             'condition' => 'required|string',
             'health' => 'required|integer'

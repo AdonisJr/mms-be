@@ -45,48 +45,53 @@ class AuthController extends Controller
 
 
 
-public function login(Request $request)
-{
-    // Log the incoming request data for debugging
-    Log::info('Login request received', [
-        'email' => $request->email,
-        'expo_push_token' => $request->expo_push_token,
-        // Note: It's generally not secure to log passwords
-    ]);
-
-    // Validate request
-    $request->validate([
-        'email' => 'required|email',
-        'password' => 'required',
-        'expo_push_token' => 'required|string', // Validate the token
-    ]);
-
-    // Authenticate user
-    $user = User::where('email', $request->email)->first();
-
-    if (!$user || !Hash::check($request->password, $user->password)) {
-        Log::warning('Login attempt failed', [
+    public function login(Request $request)
+    {
+        // Log the incoming request data for debugging
+        Log::info('Login request received', [
             'email' => $request->email,
+            'expo_push_token' => $request->expo_push_token,
         ]);
-        return response()->json(['message' => 'Invalid credentials'], 401);
+
+        // Validate request
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+            'expo_push_token' => 'required|string', // Validate the token
+        ]);
+
+        // Authenticate user
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            Log::warning('Login attempt failed', [
+                'email' => $request->email,
+            ]);
+            return response()->json(['message' => 'Invalid credentials'], 401);
+        }
+
+        // Remove all duplicate expo_push_token entries
+        UserToken::where('expo_push_token', $request->expo_push_token)->delete();
+
+        // Create a new record for the current user
+        UserToken::create([
+            'expo_push_token' => $request->expo_push_token,
+            'user_id' => $user->id
+        ]);
+
+        // Create a token for the user to authenticate API requests
+        $token = $user->createToken('token_name')->plainTextToken;
+
+        Log::info('Login successful', [
+            'user_id' => $user->id,
+            'expo_push_token' => $request->expo_push_token,
+        ]);
+
+        return response()->json(['token' => $token, 'user' => $user]);
     }
 
-    // Create a token for the user
-    $token = $user->createToken('token_name')->plainTextToken;
+    
 
-    // Save the expo_push_token to user_tokens table
-    UserToken::updateOrCreate(
-        ['user_id' => $user->id], // Find by user_id
-        ['expo_push_token' => $request->expo_push_token] // Update or create the token
-    );
-
-    Log::info('Login successful', [
-        'user_id' => $user->id,
-        'expo_push_token' => $request->expo_push_token,
-    ]);
-
-    return response()->json(['token' => $token, 'user' => $user]);
-}
 
 
     public function getUser(Request $request){

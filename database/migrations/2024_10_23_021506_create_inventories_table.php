@@ -16,9 +16,9 @@ return new class extends Migration
             $table->string('equipment_type');     // Type of equipment
             $table->string('model')->nullable();  // Model of the equipment
             $table->date('acquisition_date');     // Date of acquisition
-            $table->string('location');           // Current location of the equipment
+            $table->string('location')->nullable();           // Current location of the equipment
             $table->string('warranty')->nullable(); // Warranty information
-            $table->string('department');         // Department the equipment is assigned to
+            $table->string('department')->nullable();         // Department the equipment is assigned to
             $table->timestamps();                 // Timestamps for created_at and updated_at
         });
     }
