@@ -26,6 +26,8 @@ class PreventiveMaintenanceController extends Controller
                     'scheduled_date_to' => $task->scheduled_date_to,
                     'status' => $task->status,
                     'created_by' => $task->created_by,
+                    'created_at' => $task->created_at,
+                    'updated_at' => $task->updated_at,
                     'users' => $task->users->map(function ($user) {
                         return $user->toArray();
                     }),

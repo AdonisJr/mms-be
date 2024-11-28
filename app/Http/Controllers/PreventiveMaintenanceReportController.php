@@ -10,7 +10,7 @@ class PreventiveMaintenanceReportController extends Controller
 {
     public function index()
     {
-        $reports = PreventiveMaintenanceReport::with(['preventiveMaintenance', 'serviceRequest'])->get();
+        $reports = PreventiveMaintenanceReport::with(['preventiveMaintenance', 'serviceRequest', 'serviceRequest.equipment'])->get();
         return response()->json($reports);
     }
 
@@ -71,4 +71,18 @@ class PreventiveMaintenanceReportController extends Controller
 
         return response()->json(['message' => 'Report deleted successfully']);
     }
+
+     // New method to fetch reports by preventive_id
+     public function getReportsByPreventiveId($preventiveId)
+     {
+         $reports = PreventiveMaintenanceReport::with(['preventiveMaintenance', 'serviceRequest', 'serviceRequest.equipment'])
+             ->where('preventive_id', $preventiveId)
+             ->get();
+ 
+         if ($reports->isEmpty()) {
+             return response()->json(['message' => 'No reports found for this preventive_id', 'data' => []], 200);
+         }
+ 
+         return response()->json($reports);
+     }
 }

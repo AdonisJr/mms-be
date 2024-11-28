@@ -61,6 +61,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/getMyPreventiveMaintenanceTasks', [PreventiveMaintenanceController::class, 'getMyPreventiveMaintenanceTasks']);
     
     Route::apiResource('preventive-maintenance-report', PreventiveMaintenanceReportController::class);
+    Route::get('/getReportsByPreventiveId/{preventiveId}', [PreventiveMaintenanceReportController::class, 'getReportsByPreventiveId']);
     // Other protected routes
 });
 
