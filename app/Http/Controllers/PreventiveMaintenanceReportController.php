@@ -80,7 +80,7 @@ class PreventiveMaintenanceReportController extends Controller
              ->get();
  
          if ($reports->isEmpty()) {
-             return response()->json(['message' => 'No reports found for this preventive_id', 'data' => []], 200);
+             return response()->json([], 200);
          }
  
          return response()->json($reports);
