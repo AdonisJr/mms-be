@@ -57,7 +57,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('/inventory', InventoryController::class);
 
     // Preventive maintenance
+
     Route::apiResource('/preventive-maintenance', PreventiveMaintenanceController::class);
+    Route::put('/updatePreventiveStatus/{id}', [PreventiveMaintenanceController::class, 'updatePreventiveStatus']);
     Route::get('/getMyPreventiveMaintenanceTasks', [PreventiveMaintenanceController::class, 'getMyPreventiveMaintenanceTasks']);
     
     Route::apiResource('preventive-maintenance-report', PreventiveMaintenanceReportController::class);

@@ -19,7 +19,9 @@ class UserController extends Controller
         Log::info('Fetching all users');
         
         // Fetch all users and return as JSON
-        return response()->json(User::all(), 200);
+        $users = User::with('tasks')->get();
+
+        return response()->json($users, 200);
     }
 
     /**
@@ -235,7 +237,8 @@ class UserController extends Controller
         }
 
         // Fetch users by the provided type and order by descending
-        $users = User::where('type', $type)
+        $users = User::with(['tasks', 'preventiveMaintenances'])
+                    ->where('type', $type)
                     ->orderBy('created_at', 'desc') // Order by created_at in descending order
                     ->get();
 

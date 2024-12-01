@@ -14,7 +14,7 @@ class PreventiveMaintenanceReport extends Model
 
     protected $fillable = [
         'preventive_id',
-        'service_request_id',
+        'inventory_id',
         'condition',
         'health',
         'other_info',
@@ -26,8 +26,8 @@ class PreventiveMaintenanceReport extends Model
         return $this->belongsTo(PreventiveMaintenance::class, 'preventive_id');
     }
 
-    public function serviceRequest()
+    public function equipment()
     {
-        return $this->belongsTo(ServiceRequest::class, 'service_request_id');
+        return $this->belongsTo(Inventory::class, 'inventory_id');
     }
 }

@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ServiceRequestController;
+use Illuminate\Support\Facades\Log; // Import Log facade
 
 class PreventiveMaintenanceController extends Controller
 {
@@ -144,5 +145,32 @@ class PreventiveMaintenanceController extends Controller
         }
 
         return response()->json($myTasks, 200);
+    }
+
+    public function updatePreventiveStatus(Request $request, $id)
+    {
+        // Log the incoming request
+        Log::info('Received request to update preventive status:', $request->all());
+
+        // Validate the request for the status field only
+        $request->validate([
+            'status' => 'required|string'
+        ]);
+
+        // Find the task by ID
+        $preventive = PreventiveMaintenance::find($id);
+        if (!$preventive) {
+            Log::error('preventive not found with ID: ' . $id);
+            return response()->json(['message' => 'Preventive Maintenance not found'], 404);
+        }
+
+        // Update the preventive's status
+        $preventive->status = $request->status;
+        $preventive->save();
+
+        // Log a success message
+        Log::info('Preventive status updated successfully', ['preventive_id' => $preventive->id]);
+
+        return response()->json(['message' => 'Preventive task status updated successfully', 'task' => $preventive]);
     }
 }

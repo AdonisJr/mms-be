@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('preventive_maintenance_report', function (Blueprint $table) {
             $table->id(); // Primary key
             $table->foreignId('preventive_id')->constrained('preventive_maintenance')->onDelete('cascade'); // Foreign key to preventive maintenance
-            $table->foreignId('service_request_id')->nullable()->constrained('service_requests')->onDelete('cascade'); // Foreign key to service requests (nullable)
+            $table->foreignId('inventory_id')->nullable()->constrained('inventories')->onDelete('cascade'); // Foreign key to service requests (nullable)
             $table->string('condition')->nullable(); // Equipment condition (e.g., 'Good', 'Damaged')
             $table->unsignedTinyInteger('health')->nullable(); // Health as a value from 1-10
             $table->string('other_info')->nullable(); // Additional information

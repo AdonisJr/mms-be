@@ -10,7 +10,7 @@ class PreventiveMaintenanceReportController extends Controller
 {
     public function index()
     {
-        $reports = PreventiveMaintenanceReport::with(['preventiveMaintenance', 'serviceRequest', 'serviceRequest.equipment'])->get();
+        $reports = PreventiveMaintenanceReport::with(['preventiveMaintenance', 'equipment'])->get();
         return response()->json($reports);
     }
 
@@ -18,7 +18,7 @@ class PreventiveMaintenanceReportController extends Controller
     {
         $request->validate([
             'preventive_id' => 'required|exists:preventive_maintenance,id',
-            'service_request_id' => 'required|exists:service_requests,id',
+            'inventory_id' => 'required|exists:inventories,id',
             'condition' => 'required|string',
             'health' => 'required|integer',
             'other_info' => 'nullable|string',
@@ -31,7 +31,7 @@ class PreventiveMaintenanceReportController extends Controller
 
     public function show($id)
     {
-        $report = PreventiveMaintenanceReport::with(['preventiveMaintenance', 'serviceRequest'])->find($id);
+        $report = PreventiveMaintenanceReport::with(['preventiveMaintenance', 'equipment'])->find($id);
 
         if (!$report) {
             return response()->json(['message' => 'Report not found'], 404);
@@ -75,7 +75,7 @@ class PreventiveMaintenanceReportController extends Controller
      // New method to fetch reports by preventive_id
      public function getReportsByPreventiveId($preventiveId)
      {
-         $reports = PreventiveMaintenanceReport::with(['preventiveMaintenance', 'serviceRequest', 'serviceRequest.equipment'])
+         $reports = PreventiveMaintenanceReport::with(['preventiveMaintenance', 'equipment'])
              ->where('preventive_id', $preventiveId)
              ->get();
  
@@ -85,4 +85,5 @@ class PreventiveMaintenanceReportController extends Controller
  
          return response()->json($reports);
      }
+     
 }
