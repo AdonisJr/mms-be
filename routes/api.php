@@ -22,6 +22,19 @@ Route::get('/services', [ServiceController::class, 'index']);
 Route::get('/test', function () {
     return response()->file(storage_path('app/public/proofs/1730102505_proof.jpg'));
 });
+
+Route::get('/storage/proofs/{filename}', function ($filename) {
+    $filePath = storage_path("app/public/proofs/{$filename}");
+
+    // Check if the file exists
+    if (file_exists($filePath)) {
+        return response()->file($filePath);  // Return the image
+    }
+
+    // Return 404 if the file is not found
+    return response()->json(['error' => 'File not found'], 404);
+});
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('/users', UserController::class);
     Route::post('/changePassword', [UserController::class, 'changePassword']);
@@ -65,6 +78,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('preventive-maintenance-report', PreventiveMaintenanceReportController::class);
     Route::get('/getReportsByPreventiveId/{preventiveId}', [PreventiveMaintenanceReportController::class, 'getReportsByPreventiveId']);
     // Other protected routes
+
 });
 
 // Create API routes for User CRUD
