@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\FirebaseService; // Import the FirebaseService
 use App\Models\ServiceRequest;
 use App\Models\Service;
 use App\Models\Notification;
 use App\Models\Task;
+use App\Models\User;
 use App\Models\UserToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -69,8 +71,39 @@ class ServiceRequestController extends Controller
         // Create a new service request
         $serviceRequest = ServiceRequest::create($data);
 
+        // Retrieve all users with type 'general_service'
+        $generalServiceUsers = User::where('type', 'general_service')->get();
+
+         // Initialize FirebaseService to send notifications
+        $firebaseService = new FirebaseService();
+        
+        // Iterate over each general service user and create a notification
+        foreach ($generalServiceUsers as $user) {
+            // Create a notification entry for the user
+            Notification::create([
+                'user_id' => $user->id,
+                'type' => 'new-service-request',
+                'message' => 'A new service request has been created. Task ID: ' . $serviceRequest->id,
+                'isRead' => false, // Set isRead to false
+            ]);
+
+            // Retrieve the user's Expo push token from the database
+            $expoPushToken = UserToken::where('user_id', $user->id)->first()->expo_push_token ?? null;
+
+            if ($expoPushToken) {
+                // Send an Expo push notification using FirebaseService
+                $firebaseService->sendNotification(
+                    $expoPushToken, 
+                    'New Service Request', 
+                    "You have new requested services from faculty"
+                );
+            }
+        }
+
         return response()->json($serviceRequest, 201);
+        
     }
+
 
     /**
      * Display the specified service request.
@@ -313,7 +346,37 @@ class ServiceRequestController extends Controller
             ]);
         }
     }
+    // Method to send Expo Push Notification
+    private function sendAdminNotif($expoPushToken, $taskId, $serviceName, $userId)
+    {
+        // Prepare the message payload
+        $data = [
+            'to' => $expoPushToken,
+            'title' => 'New Service Request',
+            'body' => "You have been assigned to task ID: $taskId - $serviceName",
+            'data' => [
+                'task_id' => $taskId,
+                'service_name' => $serviceName,
+            ],
+        ];
 
+        // Send the push notification to Expo's push notification service
+        $response = Http::withHeaders([
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ])->post('https://fcm.googleapis.com/fcm/send', $data);
+
+        // Log the response or handle failure
+        if ($response->successful()) {
+            Log::info('Push notification sent successfully', ['task_id' => $taskId, 'user_id' => $userId]);
+        } else {
+            Log::error('Failed to send push notification', [
+                'task_id' => $taskId,
+                'user_id' => $userId,
+                'response' => $response->body(),
+            ]);
+        }
+    }
 
 
 
