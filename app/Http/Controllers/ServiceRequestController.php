@@ -79,27 +79,40 @@ class ServiceRequestController extends Controller
         
         // Iterate over each general service user and create a notification
         foreach ($generalServiceUsers as $user) {
-            // Create a notification entry for the user
-            Notification::create([
-                'user_id' => $user->id,
-                'type' => 'new-service-request',
-                'message' => 'A new service request has been created. Task ID: ' . $serviceRequest->id,
-                'isRead' => false, // Set isRead to false
-            ]);
-
-            // Retrieve the user's Expo push token from the database
-            $expoPushToken = UserToken::where('user_id', $user->id)->first()->expo_push_token ?? null;
-
-            if ($expoPushToken) {
-                // Send an Expo push notification using FirebaseService
-                $firebaseService->sendNotification(
-                    $expoPushToken, 
-                    'New Service Request', 
-                    "You have new requested services from faculty"
-                );
+            try {
+                // Create a notification entry for the user
+                Notification::create([
+                    'user_id' => $user->id,
+                    'type' => 'new-service-request',
+                    'message' => 'A new service request has been created. Task ID: ' . $serviceRequest->id,
+                    'isRead' => false,
+                ]);
+        
+                // Retrieve all Expo push tokens for the user
+                $expoPushTokens = UserToken::where('user_id', $user->id)->pluck('expo_push_token');
+        
+                // Log tokens for debugging (optional)
+                Log::info("Expo Push Tokens for User {$user->id}: ", $expoPushTokens->toArray());
+        
+                // Send a notification for each Expo push token
+                foreach ($expoPushTokens as $expoPushToken) {
+                    if ($expoPushToken) {
+                        $firebaseService->sendNotification(
+                            $expoPushToken,
+                            'New Service Request',
+                            'You have new requested services from faculty'
+                        );
+                    } else {
+                        Log::warning("Missing Expo push token for User {$user->id}");
+                    }
+                }
+            } catch (Exception $e) {
+                // Log the error and optionally add the user to failed notifications
+                Log::error("Failed to send notification to user {$user->id}: {$e->getMessage()}");
+                $failedNotifications[] = $user->id;
             }
         }
-
+        
         return response()->json($serviceRequest, 201);
         
     }
@@ -138,7 +151,8 @@ class ServiceRequestController extends Controller
             'expected_end_date' => 'nullable|date',
             'number_of_personnel' => 'nullable|integer',
             'classification' => 'nullable|in:immediate,short term,minimum term,project',
-            'other' => 'nullable|string'
+            'other' => 'nullable|string',
+            'reason' => 'nullable|string'
         ]);
 
         // Get the authenticated user
