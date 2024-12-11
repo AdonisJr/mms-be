@@ -20,7 +20,8 @@ class ServiceRequest extends Model
         'expected_end_date', 
         'number_of_personnel', 
         'classification',
-        'other'
+        'other',
+        'reason'
     ];
 
     public function service()
