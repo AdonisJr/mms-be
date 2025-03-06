@@ -53,4 +53,9 @@ class ServiceRequest extends Model
     {
         return $this->hasMany(Inventory::class, 'user_id', 'requested_by');
     }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'service_request_id');
+    }
 }

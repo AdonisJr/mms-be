@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log; // Import Log facade
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -17,7 +18,7 @@ class UserController extends Controller
     {
         // Log the request for debugging
         Log::info('Fetching all users');
-        
+
         // Fetch all users and return as JSON
         $users = User::with('tasks')->get();
 
@@ -85,7 +86,7 @@ class UserController extends Controller
     {
         // Find the user by ID
         $user = User::find($id);
-        
+
         // If user not found, return a 404 error
         if (!$user) {
             Log::warning('User not found', ['user_id' => $id]);
@@ -156,7 +157,6 @@ class UserController extends Controller
 
             // Return the updated user as JSON
             return response()->json($user, 200);
-
         } catch (\Exception $e) {
             // Log the full exception with stack trace
             Log::error('Error updating user', [
@@ -238,9 +238,9 @@ class UserController extends Controller
 
         // Fetch users by the provided type and order by descending
         $users = User::with(['tasks', 'preventiveMaintenances'])
-                    ->where('type', $type)
-                    ->orderBy('created_at', 'desc') // Order by created_at in descending order
-                    ->get();
+            ->where('type', $type)
+            ->orderBy('created_at', 'desc') // Order by created_at in descending order
+            ->get();
 
         // Check if any users are found
         if ($users->isEmpty()) {
@@ -250,5 +250,4 @@ class UserController extends Controller
         // Return the users as JSON
         return response()->json($users, 200);
     }
-
 }
