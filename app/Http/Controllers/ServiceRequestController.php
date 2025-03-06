@@ -36,7 +36,8 @@ class ServiceRequestController extends Controller
             'user', 
             'tasks.utilityWorkers', // Include utility workers assigned to each task
             'requested',
-            'equipment'
+            'equipment',
+            'comments'
         ])->get();
 
         return response()->json($serviceRequests);
@@ -225,7 +226,8 @@ class ServiceRequestController extends Controller
                 'approver', 
                 'tasks.utilityWorkers',
                 'requested',
-                'equipment'
+                'equipment',
+                'comments'
             ])->where('requested_by', $user->id)->get();
 
         // Check if any service requests were found

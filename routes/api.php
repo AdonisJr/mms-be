@@ -11,6 +11,7 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\PreventiveMaintenanceController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PreventiveMaintenanceReportController;
+use App\Http\Controllers\CommentController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -78,6 +79,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('preventive-maintenance-report', PreventiveMaintenanceReportController::class);
     Route::get('/getReportsByPreventiveId/{preventiveId}', [PreventiveMaintenanceReportController::class, 'getReportsByPreventiveId']);
     // Other protected routes
+
+    // COMMENTS
+    
+    Route::post('/comments', [CommentController::class, 'store']);
+    Route::get('/comments/{service_request_id}', [CommentController::class, 'index']);
 
 });
 
